@@ -10,13 +10,20 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip3 install -r requirements.txt'
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Unit Tests') {
             steps {
-                sh 'python3 -m pytest tests/ -v --cov=src --junitxml=reports/test-results.xml'
+                sh '''
+                    . venv/bin/activate
+                    python -m pytest tests/ -v --cov=src --junitxml=reports/test-results.xml
+                '''
             }
             post {
                 always {
@@ -27,7 +34,10 @@ pipeline {
 
         stage('Security Scan') {
             steps {
-                sh 'bandit -r src/ -f json -o reports/bandit-report.json || true'
+                sh '''
+                    . venv/bin/activate
+                    bandit -r src/ -f json -o reports/bandit-report.json || true
+                '''
             }
         }
 
