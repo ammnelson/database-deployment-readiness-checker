@@ -1,11 +1,3 @@
-"""
-Database Deployment Readiness Checker - Application Entry Point
-
-Uses a Lambda-compatible handler structure for validation logic,
-wrapped with a lightweight HTTP server for containerised deployment.
-Designed to integrate directly with AWS Lambda and SQS in future phases.
-"""
-
 import json
 from flask import Flask, request, jsonify
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
@@ -13,7 +5,7 @@ from src.validator import validate_deployment_request
 
 app = Flask(__name__)
 
-# Prometheus metrics
+#prometheus metrics
 REQUEST_COUNT = Counter(
     "ddrc_requests_total", "Total requests", ["endpoint", "status_code"]
 )
@@ -26,16 +18,6 @@ REQUEST_LATENCY = Histogram(
 
 
 def lambda_handler(event, context=None):
-    """
-    AWS Lambda-compatible handler for validating deployment requests.
-
-    Args:
-        event: Dict containing the deployment request payload.
-        context: Lambda context object (unused, for compatibility).
-
-    Returns:
-        Dict with statusCode and body containing validation result.
-    """
     body = event.get("body")
     if isinstance(body, str):
         body = json.loads(body)
@@ -56,7 +38,7 @@ def lambda_handler(event, context=None):
     }
 
 
-# HTTP wrapper routes for containerised deployment
+#HTTP wrapper routes for containerised deployment
 
 @app.route("/health", methods=["GET"])
 def health():

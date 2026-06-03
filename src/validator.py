@@ -7,7 +7,7 @@ readiness and compliance rules.
 
 import re
 
-# Approved services and their valid engine versions
+#approved services and their valid engine versions
 APPROVED_SERVICES = {
     "aurora-mysql": ["3.04", "3.05", "3.06", "3.07"],
     "aurora-postgresql": ["14.9", "15.4", "15.5", "16.1"],
@@ -31,12 +31,12 @@ VALID_INSTANCE_CLASSES = [
     "dc2.", "ra3.", "ds2.",
 ]
 
-# Deprecated configurations that should be flagged
+#deprecated configurations that should be flagged
 DEPRECATED_CONFIGS = [
     "db.r4", "db.m4", "db.t2", "cache.r5", "cache.m5", "dc1.",
 ]
 
-# Required fields for a valid deployment request
+#required fields for a valid deployment request
 REQUIRED_FIELDS = [
     "service_name",
     "engine_version",
@@ -96,7 +96,7 @@ def validate_deployment_request(request: dict) -> dict:
             f"Expected: ddd:hh:mm-ddd:hh:mm"
         )
 
-    # Return result
+    #return result
     if reasons:
         return {"status": "NOT_READY", "reasons": reasons}
 
