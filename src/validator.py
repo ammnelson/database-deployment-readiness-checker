@@ -46,7 +46,6 @@ REQUIRED_FIELDS = [
     "requester",
 ]
 
-# Maintenance window format: ddd:hh:mm-ddd:hh:mm
 MAINTENANCE_WINDOW_PATTERN = re.compile(
     r"^(mon|tue|wed|thu|fri|sat|sun):\d{2}:\d{2}-(mon|tue|wed|thu|fri|sat|sun):\d{2}:\d{2}$",
     re.IGNORECASE,

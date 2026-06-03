@@ -10,7 +10,7 @@ from src.validator import validate_deployment_request
 
 app = Flask(__name__)
 
-# Prometheus metrics
+#prometheus metrics
 REQUEST_COUNT = Counter(
     "ddrc_requests_total",
     "Total validation requests",
@@ -30,14 +30,12 @@ REQUEST_LATENCY = Histogram(
 
 @app.route("/health", methods=["GET"])
 def health():
-    """Health check endpoint."""
     REQUEST_COUNT.labels(endpoint="/health", status_code=200).inc()
     return jsonify({"status": "healthy", "service": "ddrc"}), 200
 
 
 @app.route("/validate", methods=["POST"])
 def validate():
-    """Validate a database deployment request."""
     with REQUEST_LATENCY.labels(endpoint="/validate").time():
         data = request.get_json()
 
@@ -55,7 +53,6 @@ def validate():
 
 @app.route("/metrics", methods=["GET"])
 def metrics():
-    """Prometheus metrics endpoint."""
     return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
 
 
