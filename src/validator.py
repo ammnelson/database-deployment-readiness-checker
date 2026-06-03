@@ -54,15 +54,9 @@ MAINTENANCE_WINDOW_PATTERN = re.compile(
 
 
 def validate_deployment_request(request: dict) -> dict:
-    """
-    Validate a database deployment request against readiness rules.
-
-    Returns:
-        dict with 'status' (READY, NOT_READY, INCOMPLETE) and 'reasons' list.
-    """
     reasons = []
 
-    # Check for missing required fields
+    #check for missing required fields
     missing_fields = [f for f in REQUIRED_FIELDS if not request.get(f)]
     if missing_fields:
         return {
@@ -75,11 +69,11 @@ def validate_deployment_request(request: dict) -> dict:
     instance_class = request["instance_class"].lower().strip()
     maintenance_window = request["maintenance_window"].strip()
 
-    # Validate service name
+    #validate service name
     if service_name not in APPROVED_SERVICES:
         reasons.append(f"Invalid service name: {service_name}")
 
-    # Validate engine version
+    #validate engine version
     if service_name in APPROVED_SERVICES:
         approved_versions = APPROVED_SERVICES[service_name]
         if not any(engine_version.startswith(v) for v in approved_versions):
@@ -88,15 +82,15 @@ def validate_deployment_request(request: dict) -> dict:
                 f"Approved: {approved_versions}"
             )
 
-    # Validate instance class
+    #validate instance class
     if not any(instance_class.startswith(prefix) for prefix in VALID_INSTANCE_CLASSES):
         reasons.append(f"Invalid instance class: {instance_class}")
 
-    # Check for deprecated configurations
+    #check for deprecated configurations
     if any(instance_class.startswith(dep) for dep in DEPRECATED_CONFIGS):
         reasons.append(f"Deprecated instance class: {instance_class}")
 
-    # Validate maintenance window format
+    #validate maintenance window format
     if not MAINTENANCE_WINDOW_PATTERN.match(maintenance_window):
         reasons.append(
             f"Invalid maintenance window format: {maintenance_window}. "
