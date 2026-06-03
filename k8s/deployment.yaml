@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ddrc
+  labels:
+    app: ddrc
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ddrc
+  template:
+    metadata:
+      labels:
+        app: ddrc
+    spec:
+      containers:
+        - name: ddrc
+          image: ddrc:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
