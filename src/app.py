@@ -1,32 +1,62 @@
 """
-Database Deployment Readiness Checker - Flask Application
+Database Deployment Readiness Checker - Application Entry Point
 
-Exposes REST API endpoints for validating database deployment requests.
+Uses a Lambda-compatible handler structure for validation logic,
+wrapped with a lightweight HTTP server for containerised deployment.
+Designed to integrate directly with AWS Lambda and SQS in future phases.
 """
 
+import json
 from flask import Flask, request, jsonify
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 from src.validator import validate_deployment_request
 
 app = Flask(__name__)
 
-#prometheus metrics
+# Prometheus metrics
 REQUEST_COUNT = Counter(
-    "ddrc_requests_total",
-    "Total validation requests",
-    ["endpoint", "status_code"],
+    "ddrc_requests_total", "Total requests", ["endpoint", "status_code"]
 )
 VALIDATION_RESULTS = Counter(
-    "ddrc_validation_results_total",
-    "Validation results by status",
-    ["result"],
+    "ddrc_validation_results_total", "Validation results", ["result"]
 )
 REQUEST_LATENCY = Histogram(
-    "ddrc_request_latency_seconds",
-    "Request latency in seconds",
-    ["endpoint"],
+    "ddrc_request_latency_seconds", "Request latency", ["endpoint"]
 )
 
+
+def lambda_handler(event, context=None):
+    """
+    AWS Lambda-compatible handler for validating deployment requests.
+
+    Args:
+        event: Dict containing the deployment request payload.
+        context: Lambda context object (unused, for compatibility).
+
+    Returns:
+        Dict with statusCode and body containing validation result.
+    """
+    body = event.get("body")
+    if isinstance(body, str):
+        body = json.loads(body)
+    elif body is None:
+        body = event
+
+    if not body:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({"error": "Request body must be JSON"}),
+        }
+
+    result = validate_deployment_request(body)
+
+    return {
+        "statusCode": 200,
+        "body": json.dumps(result),
+    }
+
+
+# HTTP wrapper routes for containerised deployment
 
 @app.route("/health", methods=["GET"])
 def health():
@@ -37,18 +67,14 @@ def health():
 @app.route("/validate", methods=["POST"])
 def validate():
     with REQUEST_LATENCY.labels(endpoint="/validate").time():
-        data = request.get_json()
+        event = {"body": request.get_json()}
+        response = lambda_handler(event)
+        result = json.loads(response["body"])
 
-        if not data:
-            REQUEST_COUNT.labels(endpoint="/validate", status_code=400).inc()
-            return jsonify({"error": "Request body must be JSON"}), 400
+        VALIDATION_RESULTS.labels(result=result.get("status", "error")).inc()
+        REQUEST_COUNT.labels(endpoint="/validate", status_code=response["statusCode"]).inc()
 
-        result = validate_deployment_request(data)
-
-        VALIDATION_RESULTS.labels(result=result["status"]).inc()
-        REQUEST_COUNT.labels(endpoint="/validate", status_code=200).inc()
-
-        return jsonify(result), 200
+        return jsonify(result), response["statusCode"]
 
 
 @app.route("/metrics", methods=["GET"])
