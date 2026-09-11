@@ -72,3 +72,7 @@ resource "aws_instance" "build_host" {
 output "public_ip" {
   value = aws_instance.build_host.public_ip
 }
+
+output "iam_role_name" {
+  value = aws_iam_role.build_host.name
+}

@@ -231,3 +231,7 @@ output "dlq_url" {
 output "table_name" {
   value = aws_dynamodb_table.results.name
 }
+
+output "function_arns" {
+  value = [aws_lambda_function.api.arn, aws_lambda_function.worker.arn]
+}

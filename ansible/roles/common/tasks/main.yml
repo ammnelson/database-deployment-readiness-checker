@@ -16,4 +16,5 @@
       - git
       - curl
       - unzip
+      - awscli
     state: present
