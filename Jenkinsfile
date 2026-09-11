@@ -46,12 +46,6 @@ pipeline {
                 sh 'docker build -t ddrc:${BUILD_NUMBER} .'
             }
         }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh 'sudo k3s kubectl apply -f k8s/'
-            }
-        }
     }
 
     post {
