@@ -16,5 +16,10 @@
       - git
       - curl
       - unzip
-      - awscli
     state: present
+
+- name: Install AWS CLI (snap - not packaged in Ubuntu 24.04 apt)
+  ansible.builtin.command:
+    cmd: snap install aws-cli --classic
+  args:
+    creates: /snap/bin/aws
