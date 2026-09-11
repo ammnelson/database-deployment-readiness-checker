@@ -12,6 +12,7 @@
   loop:
     - ubuntu
     - jenkins
+  notify: Restart Jenkins to pick up docker group
 
 - name: Ensure Docker is enabled and running
   ansible.builtin.service:
