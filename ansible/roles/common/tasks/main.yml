@@ -1,0 +1,19 @@
+---
+# Base setup every other role relies on
+- name: Update apt cache (max once an hour)
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Upgrade installed packages
+  ansible.builtin.apt:
+    upgrade: dist
+
+- name: Install baseline packages
+  ansible.builtin.apt:
+    name:
+      - python3-venv
+      - git
+      - curl
+      - unzip
+    state: present

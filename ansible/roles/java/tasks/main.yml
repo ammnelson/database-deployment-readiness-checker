@@ -1,0 +1,6 @@
+---
+# Straight to Java 21 - Module 4's 17-then-21 detour is designed away here
+- name: Install OpenJDK 21
+  ansible.builtin.apt:
+    name: openjdk-21-jdk
+    state: present
