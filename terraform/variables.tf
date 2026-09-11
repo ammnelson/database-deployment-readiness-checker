@@ -31,3 +31,9 @@ variable "public_key_path" {
   description = "Path to the SSH public key uploaded as the key pair"
   type        = string
 }
+
+variable "enable_sqs" {
+  description = "Feature toggle: true routes /validate through SQS, false validates inline"
+  type        = bool
+  default     = false
+}

@@ -224,3 +224,6 @@ __marimo__/
 *.tfvars
 !example.tfvars
 tf.plan
+
+# Lambda build artefacts
+build/

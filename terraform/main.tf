@@ -17,3 +17,8 @@ module "compute" {
   key_name          = var.key_name
   public_key_path   = var.public_key_path
 }
+
+module "serverless" {
+  source     = "./modules/serverless"
+  enable_sqs = var.enable_sqs
+}
