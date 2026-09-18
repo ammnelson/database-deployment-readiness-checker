@@ -34,6 +34,7 @@ def handler(event, context=None):
 
     if os.environ.get("ENABLE_SQS", "false").lower() == "true":
         # async path: hand the request to the queue and reply immediately
+        print(json.dumps({"log": "request_queued", "request_id": request_id}))
         message = {"request_id": request_id, "request": body}
         sqs_client().send_message(
             QueueUrl=get_queue_url(), MessageBody=json.dumps(message)
@@ -42,6 +43,7 @@ def handler(event, context=None):
 
     # sync path: validate inline and store the result
     result = validate_deployment_request(body)
+    print(json.dumps({"log": "validated_sync", "request_id": request_id, "status": result.get("status")}))
     put_result(request_id, body, result, source="api-sync")
     return respond(200, {"request_id": request_id, **result})
 

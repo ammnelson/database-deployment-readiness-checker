@@ -37,3 +37,8 @@ variable "enable_sqs" {
   type        = bool
   default     = false
 }
+
+variable "alert_email" {
+  description = "Email address subscribed to DDRC alarm notifications"
+  type        = string
+}

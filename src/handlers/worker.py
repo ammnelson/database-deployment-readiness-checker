@@ -12,6 +12,7 @@ def handler(event, context=None):
         request = message["request"]
 
         result = validate_deployment_request(request)
+        print(json.dumps({"log": "validated_worker", "request_id": request_id, "status": result.get("status")}))
         put_result(request_id, request, result, source="worker-sqs")
 
     return {"processed": len(event["Records"])}

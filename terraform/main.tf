@@ -19,6 +19,7 @@ module "compute" {
 }
 
 module "serverless" {
-  source     = "./modules/serverless"
-  enable_sqs = var.enable_sqs
+  source      = "./modules/serverless"
+  enable_sqs  = var.enable_sqs
+  alert_email = var.alert_email
 }
