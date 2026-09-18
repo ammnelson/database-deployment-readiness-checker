@@ -41,6 +41,16 @@ pipeline {
             }
         }
 
+        stage('IaC Scan') {
+            steps {
+                sh '''
+                    . venv/bin/activate
+                    pip install checkov --quiet
+                    checkov -d terraform/ --compact --quiet
+                '''
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t ddrc:${BUILD_NUMBER} .'
