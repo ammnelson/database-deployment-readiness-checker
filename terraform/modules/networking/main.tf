@@ -7,6 +7,7 @@ locals {
 }
 
 resource "aws_vpc" "main" {
+  #checkov:skip=CKV2_AWS_11:Flow logs add S3/CloudWatch cost; single-host coursework VPC with locked-down SGs
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -14,7 +15,15 @@ resource "aws_vpc" "main" {
   tags = { Name = "ddrc-module5-vpc" }
 }
 
+# Strip every rule from the VPC's default SG so nothing can use it by accident
+resource "aws_default_security_group" "main" {
+  vpc_id = aws_vpc.main.id
+
+  tags = { Name = "ddrc-module5-default-sg-locked" }
+}
+
 resource "aws_subnet" "public" {
+  #checkov:skip=CKV_AWS_130:Deliberately public subnets; the build host serves SSH/Jenkins to trusted IPs
   count                   = 2
   vpc_id                  = aws_vpc.main.id
   cidr_block              = cidrsubnet(var.vpc_cidr, 8, count.index + 1)

@@ -6,7 +6,8 @@ variable "alert_email" {
 # ---------- notifications ----------
 
 resource "aws_sns_topic" "alerts" {
-  name = "ddrc-alerts"
+  name              = "ddrc-alerts"
+  kms_master_key_id = "alias/aws/sns"
 }
 
 resource "aws_sns_topic_subscription" "email" {

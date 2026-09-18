@@ -54,12 +54,20 @@ resource "aws_iam_instance_profile" "build_host" {
 }
 
 resource "aws_instance" "build_host" {
+  #checkov:skip=CKV_AWS_126:Detailed monitoring costs extra; the CloudWatch agent already ships custom metrics
+  #checkov:skip=CKV_AWS_135:t3/m7 instances are EBS-optimized by default; flag is cosmetic here
   ami                    = data.aws_ssm_parameter.ubuntu_2404.value
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [var.security_group_id]
   key_name               = aws_key_pair.build_host.key_name
   iam_instance_profile   = aws_iam_instance_profile.build_host.name
+
+  # Require IMDSv2: blocks SSRF-style theft of the instance role credentials
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
 
   root_block_device {
     volume_size = 20
