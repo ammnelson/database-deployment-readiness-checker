@@ -9,6 +9,7 @@ variable "allowed_ips" {
 resource "aws_security_group" "build_host" {
   #checkov:skip=CKV_AWS_382:Open egress needed for apt, GitHub, snap and AWS API access from the build host
   #checkov:skip=CKV2_AWS_5:False positive; attached to the build host instance via the compute module
+  #checkov:skip=CKV_AWS_24:allowed_ips is a required variable supplied via gitignored tfvars, so CI cannot resolve it; applied SG is restricted to named CIDRs
   name        = "ddrc-module5-build-host"
   description = "Build host - SSH and Jenkins from trusted IPs only"
   vpc_id      = var.vpc_id
