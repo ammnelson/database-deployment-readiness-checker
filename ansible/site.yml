@@ -1,0 +1,11 @@
+---
+- name: Configure the DDRC build host
+  hosts: build_host
+  become: true
+
+  roles:
+    - common
+    - java
+    - jenkins
+    - docker
+    - cloudwatch_agent
